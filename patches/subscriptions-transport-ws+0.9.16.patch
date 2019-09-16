@@ -1,0 +1,26 @@
+diff --git a/node_modules/subscriptions-transport-ws/dist/server.js b/node_modules/subscriptions-transport-ws/dist/server.js
+index 730c585..c12e4e6 100644
+--- a/node_modules/subscriptions-transport-ws/dist/server.js
++++ b/node_modules/subscriptions-transport-ws/dist/server.js
+@@ -204,6 +204,10 @@ var SubscriptionServer = (function () {
+                                 params: params,
+                             }); });
+                         }).then(function (_a) {
++                            if (!connectionContext.operations[opId]) {
++                                return Promise.reject({ errorCode: 10001 });
++                            }
++
+                             var executionIterable = _a.executionIterable, params = _a.params;
+                             iterall_1.forAwaitEach(executionIterable, function (value) {
+                                 var result = value;
+@@ -241,6 +245,10 @@ var SubscriptionServer = (function () {
+                         }).then(function () {
+                             _this.sendMessage(connectionContext, opId, message_types_1.default.SUBSCRIPTION_SUCCESS, undefined);
+                         }).catch(function (e) {
++                            if (e.errorCode && e.errorCode === 10001) {
++                                return;
++                            }
++
+                             if (e.errors) {
+                                 _this.sendMessage(connectionContext, opId, message_types_1.default.GQL_DATA, { errors: e.errors });
+                             }
